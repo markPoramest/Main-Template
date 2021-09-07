@@ -1,0 +1,169 @@
+<div>
+  <p-toast  position="top-center"></p-toast>
+    <div class="row">
+      <div class="col-10">
+        <h4>ประวัติการขายสินค้า</h4>
+      </div>
+    </div>
+    <hr />
+    <div>
+      <p-table
+        [value]="pageModel"
+        [loading]="loading"
+        [paginator]="true"
+        [rows]="5"
+        scrollDirection="horizontal"
+        [rowHover]="true"
+        [showCurrentPageReport]="true"
+        responsiveLayout="scroll"
+        currentPageReportTemplate="แสดง {first} ถึง {last} จากทั้งหมด {totalRecords} รายการ"
+        [rowsPerPageOptions]="[5, 15, 25]"
+        dataKey="id"
+        [globalFilterFields]="[
+          'brand',
+          'productType',
+          'productName',
+          'tel',
+          'paymentMethod',
+        ]"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="productType">
+              <div class="p-d-flex p-jc-between p-ai-center">
+                ประเภท
+                <p-columnFilter
+                  type="text"
+                  field="productType"
+                  matchMode="in"
+                  display="menu"
+                  [showMatchModes]="false"
+                  [showOperator]="false"
+                  [showAddButton]="false"
+                >
+                  <ng-template
+                    pTemplate="filter"
+                    let-value
+                    let-filter="filterCallback"
+                  >
+                    <p-multiSelect
+                      [showHeader]="false"
+                      display="chip"
+                      [ngModel]="value"
+                      [options]="productTypeFilter"
+                      (onChange)="filter($event.value)"
+                    >
+                      <ng-template let-option pTemplate="item">
+                        <div class="p-multiselect-representative-option">
+                          <span class="p-ml-1">{{ option }}</span>
+                        </div>
+                      </ng-template>
+                    </p-multiSelect>
+                  </ng-template>
+                </p-columnFilter>
+              </div>
+            </th>
+            <th pSortableColumn="brandName">
+              <div class="p-d-flex p-jc-between p-ai-center">
+                ยี่ห้อ
+                <p-columnFilter
+                  type="text"
+                  field="brandName"
+                  matchMode="in"
+                  display="menu"
+                  [showMatchModes]="false"
+                  [showOperator]="false"
+                  [showAddButton]="false"
+                >
+                  <ng-template
+                    pTemplate="filter"
+                    let-value
+                    let-filter="filterCallback"
+                  >
+                    <p-multiSelect
+                      [showHeader]="false"
+                      display="chip"
+                      [ngModel]="value"
+                      [options]="brandFilter"
+                      (onChange)="filter($event.value)"
+                    >
+                      <ng-template let-option pTemplate="item">
+                        <div class="p-multiselect-representative-option">
+                          <span class="p-ml-1">{{ option }}</span>
+                        </div>
+                      </ng-template>
+                    </p-multiSelect>
+                  </ng-template>
+                </p-columnFilter>
+              </div>
+            </th>
+            <th pSortableColumn="productName">
+              <div class="p-d-flex p-jc-between p-ai-center">
+                ชื่อรุ่น
+                <p-columnFilter
+                  type="text"
+                  field="productName"
+                  display="menu"
+                ></p-columnFilter>
+              </div>
+            </th>
+            <th pSortableColumn="price">
+              <div class="p-d-flex p-jc-between p-ai-center">ราคา</div>
+            </th>
+            <th pSortableColumn="condition">
+              <div class="p-d-flex p-jc-between p-ai-center">
+                สภาพ
+                <p-columnFilter
+                  type="text"
+                  field="condition"
+                  matchMode="in"
+                  display="menu"
+                  [showMatchModes]="false"
+                  [showOperator]="false"
+                  [showAddButton]="false"
+                >
+                  <ng-template
+                    pTemplate="filter"
+                    let-value
+                    let-filter="filterCallback"
+                  >
+                    <p-multiSelect
+                      [showHeader]="false"
+                      display="chip"
+                      [ngModel]="value"
+                      [options]="conditionFilter"
+                      (onChange)="filter($event.value)"
+                    >
+                      <ng-template let-option pTemplate="item">
+                        <div class="p-multiselect-representative-option">
+                          <span class="p-ml-1">{{ option }}</span>
+                        </div>
+                      </ng-template>
+                    </p-multiSelect>
+                  </ng-template>
+                </p-columnFilter>
+              </div>
+            </th>
+            <th pSortableColumn="paymentMethod">วิธีการชำระเงิน</th>
+            <th pSortableColumn="tel">เบอร์โทรศัพท์ผู้ซื้อ</th>
+            <th pSortableColumn="sellDate">วันที่ขาย</th>
+            <th pSortableColumn="endOfWarranty">วันที่หมดประกัน</th>
+
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-product [scrollable]="true">
+          <tr>
+            <td style="width: 200px;">{{ product.productType }}</td>
+            <td style="width: 150px;">{{ product.brand }}</td>
+            <td style="width: 150px;">{{ product.productName }}</td>
+            <td style="width: 150px;">{{ product.price }}</td>
+            <td style="width: 200px;">{{ product.condition }}</td>
+            <td style="width: 200px;">{{ product.paymentMethod }}</td>
+            <td style="width: 150px;">{{ product.tel }}</td>
+            <td style="width: 150px;">{{ product.startSellDate }}</td>
+            <td style="width: 150px;">{{ product.endOfWarranty }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+</div>

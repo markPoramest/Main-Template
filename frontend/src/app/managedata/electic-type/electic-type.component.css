@@ -1,0 +1,7 @@
+*{
+  font-family: "Prompt", sans-serif;
+}
+.required-field::after {
+  content: " *";
+  color: red;
+}

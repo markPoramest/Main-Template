@@ -1,0 +1,402 @@
+<body class="main-wrapper">
+  <app-menu-bar></app-menu-bar>
+  <br />
+  <p-toast  position="top-center"></p-toast>
+  <div class="container shadow-lg p-3 mb-7 bg-white rounded">
+    <div class="row">
+      <div class="col-10">
+        <h4>สินค้าใน Stock</h4>
+      </div>
+      <div class="col-2">
+        <button
+        pButton
+        style="float: right"
+        type="submit"
+        (click)="openNew()"
+        class="btn btn-primary"
+        icon = "pi pi-plus-circle"
+        label = "เพิ่มสินค้าใหม่"
+      >
+      </button>
+      </div>
+    </div>
+    <hr />
+    <div>
+      <p-table
+        [value]="pageModel"
+        [loading]="loading"
+        [paginator]="true"
+        [rows]="5"
+        [scrollable]="true"
+        scrollDirection="horizontal"
+        [rowHover]="true"
+        [showCurrentPageReport]="true"
+        responsiveLayout="scroll"
+        currentPageReportTemplate="แสดง {first} ถึง {last} จากทั้งหมด {totalRecords} รายการ"
+        [rowsPerPageOptions]="[5, 15, 25]"
+        dataKey="id"
+        [globalFilterFields]="[
+          'productType',
+          'brandName',
+          'productName',
+          'price',
+          'condition',
+          'amount'
+        ]"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="productType">
+              <div class="p-d-flex p-jc-between p-ai-center">
+                ประเภท
+                <p-columnFilter
+                  type="text"
+                  field="productType"
+                  matchMode="in"
+                  display="menu"
+                  [showMatchModes]="false"
+                  [showOperator]="false"
+                  [showAddButton]="false"
+                >
+                  <ng-template
+                    pTemplate="filter"
+                    let-value
+                    let-filter="filterCallback"
+                  >
+                    <p-multiSelect
+                      [showHeader]="false"
+                      display="chip"
+                      [ngModel]="value"
+                      [options]="productTypeFilter"
+                      (onChange)="filter($event.value)"
+                    >
+                      <ng-template let-option pTemplate="item">
+                        <div class="p-multiselect-representative-option">
+                          <span class="p-ml-1">{{ option }}</span>
+                        </div>
+                      </ng-template>
+                    </p-multiSelect>
+                  </ng-template>
+                </p-columnFilter>
+              </div>
+            </th>
+            <th pSortableColumn="brandName">
+              <div class="p-d-flex p-jc-between p-ai-center">
+                ยี่ห้อ
+                <p-columnFilter
+                  type="text"
+                  field="brandName"
+                  matchMode="in"
+                  display="menu"
+                  [showMatchModes]="false"
+                  [showOperator]="false"
+                  [showAddButton]="false"
+                >
+                  <ng-template
+                    pTemplate="filter"
+                    let-value
+                    let-filter="filterCallback"
+                  >
+                    <p-multiSelect
+                      [showHeader]="false"
+                      display="chip"
+                      [ngModel]="value"
+                      [options]="brandFilter"
+                      (onChange)="filter($event.value)"
+                    >
+                      <ng-template let-option pTemplate="item">
+                        <div class="p-multiselect-representative-option">
+                          <span class="p-ml-1">{{ option }}</span>
+                        </div>
+                      </ng-template>
+                    </p-multiSelect>
+                  </ng-template>
+                </p-columnFilter>
+              </div>
+            </th>
+            <th pSortableColumn="productName">
+              <div class="p-d-flex p-jc-between p-ai-center">
+                ชื่อรุ่น
+                <p-columnFilter
+                  type="text"
+                  field="productName"
+                  display="menu"
+                ></p-columnFilter>
+              </div>
+            </th>
+            <th pSortableColumn="price">
+              <div class="p-d-flex p-jc-between p-ai-center">ราคา</div>
+            </th>
+            <th pSortableColumn="condition">
+              <div class="p-d-flex p-jc-between p-ai-center">
+                สภาพ
+                <p-columnFilter
+                  type="text"
+                  field="conditionDesc"
+                  matchMode="in"
+                  display="menu"
+                  [showMatchModes]="false"
+                  [showOperator]="false"
+                  [showAddButton]="false"
+                >
+                  <ng-template
+                    pTemplate="filter"
+                    let-value
+                    let-filter="filterCallback"
+                  >
+                    <p-multiSelect
+                      [showHeader]="false"
+                      display="chip"
+                      [ngModel]="value"
+                      [options]="conditionFilter"
+                      (onChange)="filter($event.value)"
+                    >
+                      <ng-template let-option pTemplate="item">
+                        <div class="p-multiselect-representative-option">
+                          <span class="p-ml-1">{{ option }}</span>
+                        </div>
+                      </ng-template>
+                    </p-multiSelect>
+                  </ng-template>
+                </p-columnFilter>
+              </div>
+            </th>
+            <th pSortableColumn="amount">คงเหลือ</th>
+            <th>การจัดการ</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-product scrollable]="true">
+          <tr>
+            <td>{{ product.productType }}</td>
+            <td>{{ product.brandName }}</td>
+            <td>{{ product.productName }}</td>
+            <td>{{ product.price | currency: "฿ " }}</td>
+            <td>{{ product.conditionDesc }}</td>
+            <td>{{ product.amount }}</td>
+            <td>
+              <button
+                (click)="viewProduct(product)"
+                pButton
+                pRipple
+                icon="pi pi-align-center"
+                class="p-button-rounded p-button-secondary p-mr-2"
+              ></button>
+              &nbsp;
+              <button
+                (click)="editProduct(product)"
+                pButton
+                pRipple
+                icon="pi pi-pencil"
+                class="p-button-rounded p-button-warning p-mr-2"
+              ></button>
+              &nbsp;
+              <button
+                (click)="deletProduct(product)"
+                pButton
+                pRipple
+                icon="pi pi-trash"
+                class="p-button-rounded p-button-danger p-mr-2"
+              ></button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+
+  <p-dialog
+    [(visible)]="productDialog"
+    [style]="{ width: '1000px' }"
+    [modal]="true"
+    styleClass="p-fluid"
+    header="{{
+      editable === true ? 'เพิ่ม/แก้ไขรายการสินค้า' : 'ดูรายละเอียด'
+    }}"
+  >
+    <ng-template pTemplate="content">
+      <form [formGroup]="inputForm">
+        <div class="form-group">
+          <p-toast position="top-center"></p-toast>
+          <div class="row">
+            <div class="col-2">
+              <label for="productType" class="required-field">ประเภท</label>
+            </div>
+            <div class="col-3">
+              <p-dropdown
+                [options]="productTypeList"
+                optionValue="id"
+                optionLabel="desc"
+                formControlName="productTypeId"
+                placeholder="เลือกประเภทเครื่องใช้ไฟฟ้า"
+                [style]="{ width: '100%' }"
+              ></p-dropdown>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="row">
+            <div class="col-2">
+              <label for="brand" class="required-field">เลือกยี่ห้อ</label>
+            </div>
+            <div class="col-3">
+              <p-dropdown
+                [options]="brandList"
+                optionValue="id"
+                optionLabel="desc"
+                formControlName="brand"
+                placeholder="เลือกยี่ห้อ"
+                [style]="{ width: '100%' }"
+              ></p-dropdown>
+            </div>
+            <div class="col-2">
+              <label for="productName" class="required-field"
+                >ชื่อรุ่นย่อย</label
+              >
+            </div>
+            <div class="col-3">
+              <input
+                type="text"
+                class="form-control"
+                id="productName"
+                formControlName="productName"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="row">
+            <div class="col-2">
+              <label for="price" class="required-field">ราคา</label>
+            </div>
+            <div class="col-3">
+              <p-inputNumber
+                formControlName="price"
+                mode="decimal"
+                [minFractionDigits]="2"
+                suffix=" บาท"
+              ></p-inputNumber>
+            </div>
+            <div class="col-2">
+              <label for="productName" class="required-field"
+                >จำนวนใน Stock</label
+              >
+            </div>
+            <div class="col-3">
+              <p-inputNumber
+                type="Number"
+                formControlName="amount"
+                [step]="1"
+                [min]="0"
+                [showButtons]="true"
+              ></p-inputNumber>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="row">
+            <div class="col-2">
+              <label for="condition" class="required-field">สภาพ</label>
+            </div>
+            <div class="col-3">
+              <p-dropdown
+                [options]="conditionList"
+                optionValue="id"
+                optionLabel="desc"
+                formControlName="condition"
+                placeholder="เลือกสภาพสินค้า"
+                [style]="{ width: '100%' }"
+              ></p-dropdown>
+            </div>
+            <div class="col-2">
+              <label for="warranty" class="required-field"
+                >ระยะเวลาประกัน</label
+              >
+            </div>
+            <div class="col-3">
+              <p-dropdown
+                [options]="warrantyList"
+                optionValue="id"
+                optionLabel="desc"
+                formControlName="warranty"
+                placeholder="เลือกระยะเวลาประกัน"
+                [style]="{ width: '100%' }"
+              ></p-dropdown>
+            </div>
+            <div class="col-2">
+              <label>เดือน</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="row">
+            <div class="col-2">
+              <label for="productName">รายละเอียดเพิ่มเติม</label>
+            </div>
+            <div class="col-9">
+              <textarea
+                type="String"
+                class="form-control"
+                id="description"
+                formControlName="description"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+      </form>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+      <div style="float: right">
+        <button
+          *ngIf="editable === true"
+          pButton
+          icon="pi pi-save"
+          type="submit"
+          label="บันทึก"
+          (click)="onSubmit()"
+          class="p-button-primary p-button-lg"
+        ></button>
+        &nbsp;
+        <span>
+          <button
+            (click)="hideDialog()"
+            icon="pi pi-arrow-left"
+            pButton
+            label="ย้อนกลับ"
+            class="p-button-secondary p-button-lg"
+          ></button>
+        </span>
+      </div>
+    </ng-template>
+  </p-dialog>
+
+  <p-dialog
+    [(visible)]="deleteDialog"
+    [style]="{ width: '400px' }"
+    header="ยืนยันที่จะลบ"
+    [modal]="true"
+    styleClass="p-fluid"
+  >
+  <p-toast *ngIf="deleteDialog===true" position="top-center"></p-toast>
+    <ng-template pTemplate="footer">
+      <button
+        (click)="confirmDelete()"
+        pButton
+        type="button"
+        icon="pi pi-check"
+        label="ยืนยัน"
+        class="p-button-outlined"
+      ></button>
+      <button
+        (click)="hideDeleteDialog()"
+        pButton
+        type="button"
+        icon="pi pi-times"
+        label="ยกเลิก"
+        class="p-button-outlined"
+      ></button>
+    </ng-template>
+  </p-dialog>
+</body>

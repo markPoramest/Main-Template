@@ -1,0 +1,623 @@
+<div class="row">
+  <div class="col-10">
+    <h4>เลือกสินค้าที่จะขาย</h4>
+  </div>
+</div>
+<hr />
+<div>
+  <p-table
+    [value]="pageModel"
+    [loading]="loading"
+    [paginator]="true"
+    [rows]="5"
+    scrollDirection="horizontal"
+    [rowHover]="true"
+    [showCurrentPageReport]="true"
+    responsiveLayout="scroll"
+    currentPageReportTemplate="แสดง {first} ถึง {last} จากทั้งหมด {totalRecords} รายการ"
+    [rowsPerPageOptions]="[5, 15, 25]"
+    dataKey="id"
+    [globalFilterFields]="[
+      'productType',
+      'brandName',
+      'productName',
+      'price',
+      'condition',
+      'amount'
+    ]"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th pSortableColumn="productType">
+          <div class="p-d-flex p-jc-between p-ai-center">
+            ประเภท
+            <p-columnFilter
+              type="text"
+              field="productType"
+              matchMode="in"
+              display="menu"
+              [showMatchModes]="false"
+              [showOperator]="false"
+              [showAddButton]="false"
+            >
+              <ng-template
+                pTemplate="filter"
+                let-value
+                let-filter="filterCallback"
+              >
+                <p-multiSelect
+                  [showHeader]="false"
+                  display="chip"
+                  [ngModel]="value"
+                  [options]="productTypeFilter"
+                  (onChange)="filter($event.value)"
+                >
+                  <ng-template let-option pTemplate="item">
+                    <div class="p-multiselect-representative-option">
+                      <span class="p-ml-1">{{ option }}</span>
+                    </div>
+                  </ng-template>
+                </p-multiSelect>
+              </ng-template>
+            </p-columnFilter>
+          </div>
+        </th>
+        <th pSortableColumn="brandName">
+          <div class="p-d-flex p-jc-between p-ai-center">
+            ยี่ห้อ
+            <p-columnFilter
+              type="text"
+              field="brandName"
+              matchMode="in"
+              display="menu"
+              [showMatchModes]="false"
+              [showOperator]="false"
+              [showAddButton]="false"
+            >
+              <ng-template
+                pTemplate="filter"
+                let-value
+                let-filter="filterCallback"
+              >
+                <p-multiSelect
+                  [showHeader]="false"
+                  display="chip"
+                  [ngModel]="value"
+                  [options]="brandFilter"
+                  (onChange)="filter($event.value)"
+                >
+                  <ng-template let-option pTemplate="item">
+                    <div class="p-multiselect-representative-option">
+                      <span class="p-ml-1">{{ option }}</span>
+                    </div>
+                  </ng-template>
+                </p-multiSelect>
+              </ng-template>
+            </p-columnFilter>
+          </div>
+        </th>
+        <th pSortableColumn="productName">
+          <div class="p-d-flex p-jc-between p-ai-center">
+            ชื่อรุ่น
+            <p-columnFilter
+              type="text"
+              field="productName"
+              display="menu"
+            ></p-columnFilter>
+          </div>
+        </th>
+        <th pSortableColumn="price">
+          <div class="p-d-flex p-jc-between p-ai-center">ราคา</div>
+        </th>
+        <th pSortableColumn="condition">
+          <div class="p-d-flex p-jc-between p-ai-center">
+            สภาพ
+            <p-columnFilter
+              type="text"
+              field="conditionDesc"
+              matchMode="in"
+              display="menu"
+              [showMatchModes]="false"
+              [showOperator]="false"
+              [showAddButton]="false"
+            >
+              <ng-template
+                pTemplate="filter"
+                let-value
+                let-filter="filterCallback"
+              >
+                <p-multiSelect
+                  [showHeader]="false"
+                  display="chip"
+                  [ngModel]="value"
+                  [options]="conditionFilter"
+                  (onChange)="filter($event.value)"
+                >
+                  <ng-template let-option pTemplate="item">
+                    <div class="p-multiselect-representative-option">
+                      <span class="p-ml-1">{{ option }}</span>
+                    </div>
+                  </ng-template>
+                </p-multiSelect>
+              </ng-template>
+            </p-columnFilter>
+          </div>
+        </th>
+        <th pSortableColumn="amount">คงเหลือ</th>
+        <th style="text-align: center">การจัดการ</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-product scrollable]="true">
+      <tr>
+        <td>{{ product.productType }}</td>
+        <td>{{ product.brandName }}</td>
+        <td>{{ product.productName }}</td>
+        <td>{{ product.price | currency: "฿ " }}</td>
+        <td>{{ product.conditionDesc }}</td>
+        <td>{{ product.amount }}</td>
+        <td style="text-align: center">
+          <button
+            (click)="viewProduct(product)"
+            pButton
+            pRipple
+            icon="pi pi-align-center"
+            label="รายละเอียด"
+            class="p-button-rounded p-button-secondary p-mr-2"
+          ></button>
+          &nbsp;
+          <button
+            (click)="sellProduct(product)"
+            pButton
+            pRipple
+            icon="pi pi-pencil"
+            label="ขาย"
+            class="p-button-rounded p-button-warning p-mr-2"
+          ></button>
+          &nbsp;
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<p-dialog
+  [(visible)]="productDialog"
+  [style]="{ width: '1000px' }"
+  [modal]="true"
+  styleClass="p-fluid"
+  header="รายละเอียด"
+>
+  <ng-template pTemplate="content">
+    <form [formGroup]="inputForm">
+      <div class="form-group">
+        <p-toast position="top-center"></p-toast>
+        <div class="row">
+          <div class="col-2">
+            <label for="productType" class="required-field">ประเภท</label>
+          </div>
+          <div class="col-3">
+            <p-dropdown
+              [options]="productTypeList"
+              optionValue="id"
+              optionLabel="desc"
+              formControlName="productTypeId"
+              placeholder="เลือกประเภทเครื่องใช้ไฟฟ้า"
+              [style]="{ width: '100%' }"
+            ></p-dropdown>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="row">
+          <div class="col-2">
+            <label for="brand" class="required-field">เลือกยี่ห้อ</label>
+          </div>
+          <div class="col-3">
+            <p-dropdown
+              [options]="brandList"
+              optionValue="id"
+              optionLabel="desc"
+              formControlName="brand"
+              placeholder="เลือกยี่ห้อ"
+              [style]="{ width: '100%' }"
+            ></p-dropdown>
+          </div>
+          <div class="col-2">
+            <label for="productName" class="required-field">ชื่อรุ่นย่อย</label>
+          </div>
+          <div class="col-3">
+            <input
+              type="text"
+              class="form-control"
+              id="productName"
+              formControlName="productName"
+            />
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="row">
+          <div class="col-2">
+            <label for="price" class="required-field">ราคา</label>
+          </div>
+          <div class="col-3">
+            <p-inputNumber
+              formControlName="price"
+              mode="decimal"
+              [minFractionDigits]="2"
+              suffix=" บาท"
+            ></p-inputNumber>
+          </div>
+          <div class="col-2">
+            <label for="productName" class="required-field"
+              >จำนวนใน Stock</label
+            >
+          </div>
+          <div class="col-3">
+            <p-inputNumber
+              type="Number"
+              formControlName="amount"
+              [step]="1"
+              [min]="0"
+              [showButtons]="true"
+            ></p-inputNumber>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="row">
+          <div class="col-2">
+            <label for="condition" class="required-field">สภาพ</label>
+          </div>
+          <div class="col-3">
+            <p-dropdown
+              [options]="conditionList"
+              optionValue="id"
+              optionLabel="desc"
+              formControlName="condition"
+              placeholder="เลือกสภาพสินค้า"
+              [style]="{ width: '100%' }"
+            ></p-dropdown>
+          </div>
+          <div class="col-2">
+            <label for="warranty" class="required-field">ระยะเวลาประกัน</label>
+          </div>
+          <div class="col-3">
+            <p-dropdown
+              [options]="warrantyList"
+              optionValue="id"
+              optionLabel="desc"
+              formControlName="warranty"
+              placeholder="เลือกระยะเวลาประกัน"
+              [style]="{ width: '100%' }"
+            ></p-dropdown>
+          </div>
+          <div class="col-2">
+            <label>เดือน</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="row">
+          <div class="col-2">
+            <label for="productName">รายละเอียดเพิ่มเติม</label>
+          </div>
+          <div class="col-9">
+            <textarea
+              type="String"
+              class="form-control"
+              id="description"
+              formControlName="description"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+    </form>
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <div style="float: right">
+      <span>
+        <button
+          (click)="hideDialog()"
+          icon="pi pi-arrow-left"
+          pButton
+          label="ย้อนกลับ"
+          class="p-button-secondary p-button-lg"
+        ></button>
+      </span>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<p-dialog
+  [(visible)]="sellDialog"
+  [style]="{ width: '1000px' }"
+  [modal]="true"
+  styleClass="p-fluid"
+  header="ขายสินค้า"
+>
+  <ng-template pTemplate="content">
+    <form [formGroup]="inputForm">
+      <div class="form-group">
+        <p-toast position="top-center"></p-toast>
+        <div class="row">
+          <div class="col-2">
+            <label for="productType"><b>ประเภท</b></label>
+          </div>
+          <div class="col-2">
+            <label>{{ inputForm.value.productType }}</label>
+          </div>
+          <div class="col-2">
+            <label for="brandName"><b>ยี่ห้อ</b></label>
+          </div>
+          <div class="col-2">
+            <label>{{ inputForm.value.brandName }}</label>
+          </div>
+          <div class="col-2">
+            <label for="productName"><b>ชื่อรุ่นย่อย</b></label>
+          </div>
+          <div class="col-2">
+            <label>{{ inputForm.value.productName }}</label>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-2">
+            <label for="price"><b>ราคา</b></label>
+          </div>
+          <div class="col-2">
+            <label>{{ inputForm.value.price }} บาท</label>
+          </div>
+          <div class="col-2">
+            <label for="conditionDesc"><b>สภาพ</b></label>
+          </div>
+          <div class="col-2">
+            <label>{{ inputForm.value.conditionDesc }}</label>
+          </div>
+          <div class="col-2">
+            <label for="warranty"><b>ประกัน</b></label>
+          </div>
+          <div class="col-2">
+            <label>{{ inputForm.value.warranty }} เดือน</label>
+          </div>
+        </div>
+        <hr />
+
+        <div class="form-group">
+          <div class="row">
+            <div class="col-3">
+              <label class="required-field">รูปแบบการชำระเงิน</label>
+            </div>
+            <div class="col-3">
+              <div class="p-field-radiobutton">
+                <p-radioButton
+                  (onClick)="onChangePayment()"
+                  name="paymentMethod"
+                  value="1"
+                  formControlName="paymentMethod"
+                  inputId="full"
+                ></p-radioButton>
+                &nbsp;
+                <label for="full">ชำระเต็มจำนวน</label>
+              </div>
+            </div>
+            <div class="col-2" *ngIf="inputForm.value.paymentMethod==='1'">
+              <label class="required-field">วิธีการชำระเงิน</label>
+            </div>
+            <div *ngIf="inputForm.value.paymentMethod==='1'" class="col-3" >
+              <p-dropdown
+              [options]="fullPaymentMethod"
+              optionValue="id"
+              optionLabel="desc"
+              formControlName="fullPaymentMethod"
+              placeholder="เลือกวิธีการชำระเงิน"
+              [style]="{ width: '100%' }"
+            ></p-dropdown>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-3"></div>
+            <div class="col-3">
+              <div class="p-field-radiobutton">
+                <p-radioButton
+                  name="paymentMethod"
+                  value="2"
+                  formControlName="paymentMethod"
+                  inputId="installment"
+                ></p-radioButton>
+                &nbsp;
+                <label for="installment">ผ่อนชำระ</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row" *ngIf="inputForm.value.paymentMethod==='1'">
+          <div class="col-3">
+            <label for="lastName" class="required-field">เบอร์โทรศัพท์</label>
+          </div>
+          <div class="col-3">
+            <input
+              type="text"
+              class="form-control"
+              id="tel"
+              formControlName="tel"
+            />
+          </div>
+        </div>
+        <div class="row" *ngIf="inputForm.value.paymentMethod==='2'">
+          <div class="col-3">
+            <label class="required-field">ประเภทลูกค้า</label>
+          </div>
+          <div class="col-3">
+            <div class="p-field-radiobutton">
+              <p-radioButton
+                name="customerType"
+                value="old"
+                formControlName="customerType"
+                inputId="old"
+              ></p-radioButton>
+              &nbsp;
+              <label for="old"> ลูกค้าเก่า</label>
+            </div>
+          </div>
+
+          <div class="col-3">
+            <div class="p-field-radiobutton">
+              <p-radioButton
+                name="customerType"
+                value="new"
+                formControlName="customerType"
+                inputId="old"
+              ></p-radioButton>
+              &nbsp;
+              <label for="old"> ลูกค้าใหม่</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="inputForm.value.customerType !== null">
+        <div class="form-group">
+          <div class="row">
+            <div class="col-3">
+              <label for="idCardNo" class="required-field"
+                >เลขบัตรประจำตัวประชาชน</label
+              >
+            </div>
+            <div class="col-3">
+              <input
+                type="text"
+                class="form-control"
+                id="idCardNo"
+                formControlName="idCardNo"
+              />
+            </div>
+            <div *ngIf="inputForm.value.customerType === 'old'" class="col-2">
+              <button
+                (click)="onSearch()"
+                icon="pi pi-search"
+                pButton
+                label="ค้นหา"
+                class="p-button-primary p-button-sm"
+              ></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="row">
+            <div class="col-3">
+              <label for="firstName" class="required-field">ชื่อ</label>
+            </div>
+            <div class="col-3">
+              <input
+                type="text"
+                class="form-control"
+                id="firstName"
+                formControlName="firstName"
+              />
+            </div>
+            <div class="col-2">
+              <label for="lastName" class="required-field">นามสกุล</label>
+            </div>
+            <div class="col-3">
+              <input
+                type="text"
+                class="form-control"
+                id="lastName"
+                formControlName="lastName"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="row">
+            <div class="col-3">
+              <label for="lastName" class="required-field">เบอร์โทรศัพท์</label>
+            </div>
+            <div class="col-3">
+              <input
+                type="text"
+                class="form-control"
+                id="tel"
+                formControlName="tel"
+              />
+            </div>
+            <div class="col-2">
+              <label for="address" class="required-field">ที่อยู่</label>
+            </div>
+            <div class="col-3">
+              <textarea
+                type="text"
+                class="form-control"
+                id="address"
+                formControlName="address"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="row">
+            <div class="col-3">
+              <label for="lastName" class="required-field">อัตราดอกเบี้ย</label>
+            </div>
+            <div class="col-3">
+              <p-inputNumber
+              formControlName="interest"
+              [minFractionDigits]="2"
+              suffix=" %"
+              (onInput)="onInterestChange($event)"
+               mode="decimal">
+              </p-inputNumber>
+            </div>
+            <div class="col-2">
+              <label for="month" class="required-field">ระยะเวลาผ่อน</label>
+            </div>
+            <div class="col-3">
+              <p-inputNumber
+              formControlName="month"
+              suffix=" เดือน"
+              (onInput)="onMonthChange($event)"
+               mode="decimal">
+              </p-inputNumber>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="row">
+            <div class="col-3">
+              <label >ผ่อนเดือนละ</label>
+            </div>
+            <div class="col-3">
+              <label for="inputnumber">{{ inputForm.value.payPerMonth | number : '1.2-2' }} บาท</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <div style="float: right">
+      <button
+      (click)="onSubmit()"
+      icon="pi pi-save"
+      pButton
+      label="บันทึก"
+      class="p-button-primary p-button-lg"
+    ></button>
+      <span>
+        <button
+          (click)="hideDialog()"
+          icon="pi pi-arrow-left"
+          pButton
+          label="ย้อนกลับ"
+          class="p-button-secondary p-button-lg"
+        ></button>
+      </span>
+    </div>
+  </ng-template>
+</p-dialog>

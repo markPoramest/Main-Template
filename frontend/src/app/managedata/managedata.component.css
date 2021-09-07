@@ -1,0 +1,11 @@
+.main-wrapper {
+  height: 100vh;
+}
+body{
+  font-family: "Prompt", sans-serif;
+  background-color: #e9e9e9;
+}
+.required-field::after {
+  content: " *";
+  color: red;
+}

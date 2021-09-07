@@ -1,0 +1,65 @@
+<body class="main-wrapper">
+  <app-menu-bar></app-menu-bar>
+  <br />
+  <div class="container shadow-lg p-3 mb-7 bg-white rounded">
+    <div class="row">
+      <div class="col-12">
+        <h1 class="header" style="text-align: center">
+          ยินดีต้อนรับสู่ตัวอย่างเว็บไซต์
+        </h1>
+      </div>
+    </div>
+  </div>
+  <br />
+  <div class="container shadow-lg p-3 mb-5 bg-white rounded">
+    <div class="row">
+      <div class="col-sm">
+        <img src="../../assets/web.jpg" class="image-size" />
+      </div>
+      <div class="margin col-sm">
+        <h3>นี่คือตัวอย่างเว็บไซต์</h3>
+        <h5>
+          โดยลูกค้าสามารถส่งความต้องการ ที่ลูกค้าค้องการบนเว็บได้ตามต้องการ
+          โดยเราได้พัฒนาโดยใช้ Angular Java Spring Boot และ Sql
+          ระยะเวลาในการพัฒนาขึ้นอยู่กับจำนวนหน้า
+          รวมถึงความซับซ้อนของงานที่ลูกค้าต้องการ
+          <br />หากสนใจสามารถทักมาสอบถามเบื้องต้น เพื่อประเมินค่าใช้จ่าย
+          และระยะเวลาได้ครับ
+        </h5>
+      </div>
+    </div>
+    <hr />
+    <div class="row">
+      <div class="col-sm">
+        <h2>Step การทำงาน</h2>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm" >
+        <p-timeline [value]="events"  align="alternate">
+          <!-- <ng-template pTemplate="marker" let-event>
+            <span class="custom-marker p-shadow-2">
+              <i [ngClass]="event.icon"></i>
+            </span>
+          </ng-template> -->
+          <ng-template pTemplate="content" let-event >
+            {{ event.status }}
+          </ng-template>
+        </p-timeline>
+      </div>
+    </div>
+    <br />
+    <hr />
+    <blockquote class="blockquote text-right">
+      <p class="mb-0">
+        ขอบคุณทุกโอกาสที่ลูกค้ามอบให้ เพื่อพัฒนาความสามารถให้กับตัวเอง
+      </p>
+      <footer class="blockquote-footer">
+        <cite title="Source Title">Poramest Vichitnopawan</cite>
+      </footer>
+    </blockquote>
+  </div>
+</body>
+<div class="row">
+  <div class="col-1"></div>
+</div>

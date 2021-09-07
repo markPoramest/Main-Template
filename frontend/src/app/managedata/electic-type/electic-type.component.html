@@ -1,0 +1,143 @@
+<div class="row">
+  <div class="col-9">
+    <h4>ประเภทเครื่องใช้ไฟฟ้า</h4>
+    <p-toast position="top-center"></p-toast>
+  </div>
+  <div class="col-3">
+    <button
+      pButton
+      style="float: right"
+      type="submit"
+      (click)="openNew()"
+      class="btn btn-primary"
+      icon = "pi pi-plus-circle"
+      label = "เพิ่มเครื่องใช้ไฟฟ้าใหม่"
+    >
+    </button>
+  </div>
+</div>
+<hr />
+<div>
+  <p-table
+    [value]="pageModel"
+    [loading]="loading"
+    [paginator]="true"
+    [rows]="5"
+    [rowHover]="true"
+    [showCurrentPageReport]="true"
+    responsiveLayout="scroll"
+    currentPageReportTemplate="แสดง {first} ถึง {last} จากทั้งหมด {totalRecords} รายการ"
+    [rowsPerPageOptions]="[5, 15, 25]"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 70%;text-align: center;" pSortableColumn="productName">ชื่อประเภทเครื่องใช้ไฟฟ้า</th>
+        <th style="width: 30%;text-align: center;">การจัดการ</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-product scrollable]="true">
+      <tr>
+        <td style="text-align: center;">{{ product.productName }}</td>
+        <td style="text-align: center;">
+          <button
+            (click)="editProduct(product)"
+            pButton
+            pRipple
+            icon="pi pi-pencil"
+            class="p-button-rounded p-button-warning p-mr-2"
+          ></button>
+          &nbsp;
+          <button
+            (click)="deletProduct(product)"
+            pButton
+            pRipple
+            icon="pi pi-trash"
+            class="p-button-rounded p-button-danger p-mr-2"
+          ></button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<p-dialog
+    [(visible)]="productDialog"
+    [style]="{ width: '500px' }"
+    [modal]="true"
+    styleClass="p-fluid"
+    header="{{
+      editable === true ? 'เพิ่ม/แก้ไขเครื่องใช้ไฟฟ้า' : 'ดูรายละเอียด'
+    }}"
+  >
+    <ng-template pTemplate="content">
+      <form [formGroup]="inputForm">
+          <p-toast position="top-center"></p-toast>
+        <div class="form-group">
+          <div class="row">
+            <div class="col-6">
+              <label for="productName" class="required-field">ชื่อเครื่องใช้ไฟฟ้า</label>
+            </div>
+            <div class="col-6">
+              <input
+                type="String"
+                class="form-control"
+                id="productName"
+                formControlName="productName"
+              />
+            </div>
+          </div>
+        </div>
+      </form>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+      <div style="float: right">
+        <button
+          *ngIf="editable === true"
+          pButton
+          icon="pi pi-save"
+          type="submit"
+          label="บันทึก"
+          (click)="onSubmit()"
+          class="p-button-primary p-button"
+        ></button>
+        &nbsp;
+        <span>
+          <button
+            (click)="hideDialog()"
+            icon="pi pi-arrow-left"
+            pButton
+            label="ย้อนกลับ"
+            class="p-button-secondary p-button"
+          ></button>
+        </span>
+      </div>
+    </ng-template>
+  </p-dialog>
+
+  <p-dialog
+    [(visible)]="deleteDialog"
+    [style]="{ width: '400px' }"
+    header="ยืนยันที่จะลบ"
+    [modal]="true"
+    styleClass="p-fluid"
+  >
+    <ng-template pTemplate="footer">
+      <button
+        (click)="confirmDelete()"
+        pButton
+        type="button"
+        icon="pi pi-check"
+        label="ยืนยัน"
+        class="p-button-outlined"
+      ></button>
+      <button
+        (click)="hideDeleteDialog()"
+        pButton
+        type="button"
+        icon="pi pi-times"
+        label="ยกเลิก"
+        class="p-button-outlined"
+      ></button>
+    </ng-template>
+  </p-dialog>
